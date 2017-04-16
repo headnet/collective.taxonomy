@@ -137,12 +137,21 @@ class TaxonomyBehavior(Persistent):
         logger.debug('generating interface for %s' % self.short_name)
 
         if hasattr(self, 'is_single_select') and self.is_single_select:
-            select_field = schema.Choice(
-                title=_(unicode(self.field_title)),
-                description=_(unicode(self.field_description)),
-                required=self.is_required,
-                vocabulary=self.vocabulary_name
-            )
+            if hasattr(self, 'is_required') and self.is_required:
+                select_field = schema.Choice(
+                    title=_(unicode(self.field_title)),
+                    description=_(unicode(self.field_description)),
+                    required=self.is_required,
+                    vocabulary=self.vocabulary_name,
+                    default="--NOVALUE--"
+                )
+            else:
+                select_field = schema.Choice(
+                    title=_(unicode(self.field_title)),
+                    description=_(unicode(self.field_description)),
+                    required=self.is_required,
+                    vocabulary=self.vocabulary_name
+                )
         else:
             select_field = schema.List(
                 title=_(unicode(self.field_title)),
