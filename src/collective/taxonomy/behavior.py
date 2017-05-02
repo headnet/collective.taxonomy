@@ -43,7 +43,7 @@ class TaxonomyBehavior(Persistent):
     def __init__(self, name, title, description, field_title,
                  field_description, is_required=False,
                  is_single_select=False, write_permission='',
-                 default_language='en'):
+                 default_language='en', fieldset='categorization'):
         self.name = name
         self.title = _(title)
         self.description = _(description)
@@ -54,6 +54,7 @@ class TaxonomyBehavior(Persistent):
         self.is_required = is_required
         self.write_permission = write_permission
         self.default_language = default_language
+        self.fieldset = fieldset
 
     def deactivateSearchable(self):
         registry = getUtility(IRegistry)
@@ -179,11 +180,17 @@ class TaxonomyBehavior(Persistent):
                  self.write_permission}
             )
 
-        schemaclass.setTaggedValue(
-            FIELDSETS_KEY,
-            [Fieldset('categorization',
-                      fields=[self.field_name])]
-        )
+        try:
+            fieldset = self.fieldset
+        except AttributeError:
+            # Backwards compatible:
+            fieldset = 'categorization'
+        if fieldset != 'default':
+            schemaclass.setTaggedValue(
+                FIELDSETS_KEY,
+                [Fieldset(fieldset,
+                          fields=[self.field_name])]
+            )
 
         if hasattr(self, 'is_single_select') and not self.is_single_select:
             schemaclass.setTaggedValue(
@@ -194,3 +201,4 @@ class TaxonomyBehavior(Persistent):
 
         alsoProvides(schemaclass, IFormFieldProvider)
         return schemaclass
+

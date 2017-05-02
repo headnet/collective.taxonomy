@@ -59,7 +59,8 @@ def importTaxonomy(context):
 
                 result = {}
                 for name in ['field_title', 'field_description',
-                             'default_language', 'write_permission']:
+                             'default_language', 'write_permission',
+                             'fieldset']:
                     try:
                         result[name] = unicode(config.get('taxonomy', name), 'utf-8')
                     except ConfigParser.NoOptionError:
@@ -101,7 +102,7 @@ def exportTaxonomy(context):
                         config.set('taxonomy', name, value)
 
             for name in ['field_title', 'field_description',
-                         'write_permission']:
+                         'write_permission', 'fieldset']:
                 value = getattr(behavior, name, None)
                 if value:
                     if type(value) == unicode:
